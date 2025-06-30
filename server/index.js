@@ -4,13 +4,22 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+
+// ✅ Allow CORS from frontend domain (Vercel + localhost)
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://watchly-moive-web-app.vercel.app"
+  ],
+  credentials: true,
+}));
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-// Connect to MongoDB
+// ✅ MongoDB connection
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -25,14 +34,14 @@ mongoose.connect(MONGO_URI, {
   console.error("❌ MongoDB connection error:", err);
 });
 
-// Test route
+// ✅ Basic route
 app.get("/", (req, res) => {
   res.send("🎬 MovieZone API is running");
 });
 
-const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
+// ✅ Routes
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
 
-const watchlistRoutes = require('./routes/watchlist');
-app.use('/api/watchlist', watchlistRoutes);
-
+const watchlistRoutes = require("./routes/watchlist");
+app.use("/api/watchlist", watchlistRoutes);
