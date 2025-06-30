@@ -28,7 +28,7 @@ export default function Navbar({ user, onLogin, onLogout }) {
     setCurrentUser(null);
     onLogout && onLogout();
   };
-
+//heyysiddhant
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-[#121212] text-white px-6 py-4 flex justify-between items-center shadow-md border-b border-gray-800">
       {/* Brand */}
