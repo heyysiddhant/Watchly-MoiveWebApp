@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { FaTrash } from 'react-icons/fa';
 
 const UserDashboard = () => {
   const [watchlist, setWatchlist] = useState([]);
@@ -35,47 +36,51 @@ const UserDashboard = () => {
   useEffect(() => {
     fetchWatchlist();
 
-    // Listen for custom "watchlistUpdated" event
     const handleUpdate = () => {
       fetchWatchlist();
     };
 
     window.addEventListener('watchlistUpdated', handleUpdate);
-
-    return () => {
-      window.removeEventListener('watchlistUpdated', handleUpdate);
-    };
+    return () => window.removeEventListener('watchlistUpdated', handleUpdate);
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-red-700">👤 Your Dashboard</h1>
-      <div className="bg-gray-800 p-6 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-semibold text-yellow-400 mb-4">🎬 Your Watchlist</h2>
+    <div className="bg-[#0f0f0f] text-white pt-24 px-4 pb-10">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold mb-4">🎬 Your Watchlist</h1>
+
         {watchlist.length === 0 ? (
-          <p className="text-gray-300">No movies in your watchlist yet.</p>
+          <div className="text-gray-400 text-lg">You haven't added any movies yet.</div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {watchlist.map((movie) => (
-              <div key={movie.imdbID} className="bg-white text-black rounded shadow overflow-hidden">
-                <img
-                  src={movie.Poster !== 'N/A' ? movie.Poster : '/no-image.jpg'}
-                  alt={movie.Title}
-                  className="w-full h-64 object-cover"
-                />
-                <div className="p-3 flex flex-col gap-2">
-                  <h3 className="font-bold">{movie.Title}</h3>
-                  <p className="text-sm text-gray-700">{movie.Year}</p>
-                  <p className="text-xs text-gray-500">{movie.Genre || 'Unknown Genre'}</p>
-                  <button
-                    onClick={() => handleDelete(movie.imdbID)}
-                    className="mt-2 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded text-sm"
+          // ✅ WRAP the scrollable row in a block container so height is respected
+          <div className="w-full">
+            <div className="overflow-x-auto">
+              <div className="flex space-x-4 sm:space-x-6 overflow-x-scroll pb-4 scroll-smooth snap-x snap-mandatory scrollbar-hide">
+                {watchlist.map((movie) => (
+                  <div
+                    key={movie.imdbID}
+                    className="min-w-[160px] sm:min-w-[180px] md:min-w-[200px] bg-[#1f1f1f] border border-gray-700 rounded-xl shadow-md snap-start hover:scale-105 transition-transform duration-300"
                   >
-                    ❌ Remove
-                  </button>
-                </div>
+                    <img
+                      src={movie.Poster !== 'N/A' ? movie.Poster : '/no-image.jpg'}
+                      alt={movie.Title}
+                      className="w-full h-52 object-cover rounded-t-xl"
+                    />
+                    <div className="p-3">
+                      <h3 className="text-base font-semibold text-white truncate">{movie.Title}</h3>
+                      <p className="text-xs text-gray-400">{movie.Year}</p>
+                      <p className="text-xs text-gray-500 truncate">{movie.Genre || 'Unknown Genre'}</p>
+                      <button
+                        onClick={() => handleDelete(movie.imdbID)}
+                        className="mt-2 bg-red-600 hover:bg-red-700 transition text-white py-1 px-3 rounded text-xs flex items-center gap-2"
+                      >
+                        <FaTrash className="text-xs" /> Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         )}
       </div>

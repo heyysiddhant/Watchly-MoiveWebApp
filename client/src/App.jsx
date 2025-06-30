@@ -29,7 +29,7 @@ function App() {
       {user ? (
         <UserDashboard user={user} />
       ) : (
-        <div className="p-6 text-center text-gray-700">
+        <div className="p-6 my-15 mx-5 text-center bg-blue-950 text-white">
           <h2 className="text-2xl font-semibold mb-4">Please Log in to access your dashboard.</h2>
         </div>
       )}
