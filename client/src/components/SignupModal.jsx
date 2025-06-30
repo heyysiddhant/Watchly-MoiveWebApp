@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
 
 export default function SignUpModal({ closeModal, onSignUp }) {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -15,7 +15,8 @@ export default function SignUpModal({ closeModal, onSignUp }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signup', form);
+     const res = await axios.post('/api/auth/signup', form);
+
       setSuccess(res.data.message);
       onSignUp(res.data.user);
       closeModal();

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
 
 export default function LoginModal({ closeModal, onLogin }) {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -15,7 +15,8 @@ export default function LoginModal({ closeModal, onLogin }) {
  const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const res = await axios.post('http://localhost:5000/api/auth/login', form);
+   const res = await axios.post('/api/auth/login', form);
+
 
     // ✅ Save the token to localStorage
     localStorage.setItem('token', res.data.token);
