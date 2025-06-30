@@ -10,7 +10,7 @@ app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
       "http://localhost:5173",
-      "https://watchly-moive-web-app.vercel.app"
+      "https://watchly-movie-web-app.vercel.app"
     ];
 
     if (
