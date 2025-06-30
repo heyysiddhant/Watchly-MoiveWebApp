@@ -9,7 +9,8 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://watchly-moive-web-app.vercel.app"
+    "https://watchly-moive-web-app.vercel.app",
+    "https://watchly-moive-web-7195w0zlc-heyysiddhants-projects.vercel.app"
   ],
   credentials: true,
 }));
