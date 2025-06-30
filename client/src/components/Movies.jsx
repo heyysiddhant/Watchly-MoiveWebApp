@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "../api/axios";
+import axios from "axios";
 
 const API_KEY = "3c5f8694";
 
