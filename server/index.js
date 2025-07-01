@@ -10,7 +10,8 @@ app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
       "http://localhost:5173",
-      "https://watchly-movie-web-app.vercel.app"
+      "https://watchly-moive-web-app.vercel.app"
+      
     ];
 
     if (
@@ -23,10 +24,10 @@ app.use(cors({
       callback(new Error("❌ Not allowed by CORS: " + origin));
     }
   },
-  
+  credentials: true,
 }));
 
-
+// ✅ JSON Parser
 app.use(express.json());
 
 // ✅ MongoDB Connection
