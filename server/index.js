@@ -1,16 +1,20 @@
 const express = require("express");
-const app = express();
 const cors = require("cors");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
+const app = express();
+
+// ✅ Dynamic CORS Configuration with Preflight Support
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
       "http://localhost:5173",
       "https://watchly-moive-web-app.vercel.app"
     ];
-    
+
     if (
-      !origin ||
+      !origin || // Allow requests with no origin (Postman, curl)
       allowedOrigins.includes(origin) ||
       origin.endsWith(".vercel.app")
     ) {
@@ -22,9 +26,23 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ THIS LINE IS CRITICAL
+// ✅ Handle preflight requests (important for POST with headers)
 app.options("*", cors());
 
+// ✅ Body parser for JSON
+app.use(express.json());
+
+// ✅ Basic test route
+app.get("/", (req, res) => {
+  res.send("🎬 MovieZone API is running");
+});
+
+// ✅ Mount routes
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
+
+const watchlistRoutes = require("./routes/watchlist");
+app.use("/api/watchlist", watchlistRoutes);
 
 // ✅ MongoDB Connection
 const PORT = process.env.PORT || 5000;
@@ -43,14 +61,3 @@ mongoose.connect(MONGO_URI, {
 .catch((err) => {
   console.error("❌ MongoDB connection error:", err);
 });
-
-// ✅ Routes
-app.get("/", (req, res) => {
-  res.send("🎬 MovieZone API is running");
-});
-
-const authRoutes = require("./routes/auth");
-app.use("/api/auth", authRoutes);
-
-const watchlistRoutes = require("./routes/watchlist");
-app.use("/api/watchlist", watchlistRoutes);
