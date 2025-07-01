@@ -23,10 +23,10 @@ app.use(cors({
       callback(new Error("❌ Not allowed by CORS: " + origin));
     }
   },
-  credentials: true,
+  
 }));
 
-// ✅ JSON Parser
+
 app.use(express.json());
 
 // ✅ MongoDB Connection
