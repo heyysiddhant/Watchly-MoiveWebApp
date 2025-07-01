@@ -5,20 +5,16 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ Dynamic CORS Configuration
+// ✅ Allowed Origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://watchly-moive-web-app.vercel.app", // ✅ spelling fixed
+];
+
+// ✅ CORS Middleware
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      "http://localhost:5173",
-      "https://watchly-moive-web-app.vercel.app"
-      
-    ];
-
-    if (
-      !origin || // Allow Postman or curl
-      allowedOrigins.includes(origin) ||
-      origin.endsWith(".vercel.app")
-    ) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
       callback(null, true);
     } else {
       callback(new Error("❌ Not allowed by CORS: " + origin));
@@ -27,7 +23,22 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ JSON Parser
+// ✅ Handle Preflight Requests
+app.options("*", cors());
+
+// ✅ Manual Headers Middleware (fallback for Render)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app"))) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
+  next();
+});
+
+// ✅ JSON Body Parser
 app.use(express.json());
 
 // ✅ MongoDB Connection
