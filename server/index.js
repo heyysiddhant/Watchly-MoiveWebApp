@@ -5,56 +5,52 @@ require("dotenv").config();
 
 const app = express();
 
-//  Dynamic CORS Configuration
+// ✅ CORS config for localhost + Vercel
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://watchly-moive-web-app.vercel.app"
+];
+
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      "http://localhost:5173",
-      "https://watchly-moive-web-app.vercel.app"
-      
-    ];
-
     if (
-      !origin || // Allow Postman or curl
+      !origin ||
       allowedOrigins.includes(origin) ||
       origin.endsWith(".vercel.app")
     ) {
       callback(null, true);
     } else {
-      callback(new Error("❌ Not allowed by CORS: " + origin));
+      callback(new Error("❌ CORS: " + origin));
     }
   },
   credentials: true,
 }));
 
-// ✅ JSON Parser
+// ✅ CRITICAL: handle browser preflight (OPTIONS) requests
+app.options("*", cors());
+
 app.use(express.json());
 
-// ✅ MongoDB Connection
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI;
-
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log("✅ Connected to MongoDB");
-  app.listen(PORT, () => {
-    console.log(`🎬 Server running on http://localhost:${PORT}`);
-  });
-})
-.catch((err) => {
-  console.error("❌ MongoDB connection error:", err);
-});
-
-// ✅ Routes
+// ✅ Test route
 app.get("/", (req, res) => {
   res.send("🎬 MovieZone API is running");
 });
 
-const authRoutes = require("./routes/auth");
-app.use("/api/auth", authRoutes);
+// ✅ Routes
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/watchlist", require("./routes/watchlist"));
 
-const watchlistRoutes = require("./routes/watchlist");
-app.use("/api/watchlist", watchlistRoutes);
+// ✅ MongoDB
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
+
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    console.log("✅ Connected to MongoDB");
+    app.listen(PORT, () => {
+      console.log(`🎬 Server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+  });
