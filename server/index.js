@@ -1,21 +1,14 @@
-const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
-require("dotenv").config();
 
-const app = express();
-
-//  Dynamic CORS Configuration
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
       "http://localhost:5173",
       "https://watchly-moive-web-app.vercel.app"
-      
     ];
-
+    
     if (
-      !origin || // Allow Postman or curl
+      !origin ||
       allowedOrigins.includes(origin) ||
       origin.endsWith(".vercel.app")
     ) {
@@ -27,8 +20,9 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ JSON Parser
-app.use(express.json());
+// ✅ THIS LINE IS CRITICAL
+app.options("*", cors());
+
 
 // ✅ MongoDB Connection
 const PORT = process.env.PORT || 5000;
