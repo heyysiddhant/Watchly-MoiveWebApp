@@ -5,42 +5,44 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ CORS config for localhost + Vercel
+// ✅ Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
   "https://watchly-moive-web-app.vercel.app"
 ];
 
+// ✅ CORS middleware with preflight handling
 app.use(cors({
   origin: (origin, callback) => {
-    if (
-      !origin ||
-      allowedOrigins.includes(origin) ||
-      origin.endsWith(".vercel.app")
-    ) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
       callback(null, true);
     } else {
-      callback(new Error("❌ CORS: " + origin));
+      callback(new Error("❌ Not allowed by CORS: " + origin));
     }
   },
   credentials: true,
 }));
 
-// ✅ CRITICAL: handle browser preflight (OPTIONS) requests
+// ✅ VERY IMPORTANT: Handle OPTIONS preflight requests
 app.options("*", cors());
 
+// ✅ Parse incoming JSON
 app.use(express.json());
 
-// ✅ Test route
+// ✅ Root route for testing
 app.get("/", (req, res) => {
   res.send("🎬 MovieZone API is running");
 });
 
-// ✅ Routes
-app.use("/api/auth", require("./routes/auth"));
-app.use("/api/watchlist", require("./routes/watchlist"));
+// ✅ Auth routes (make sure routes/auth.js exists and is clean)
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
 
-// ✅ MongoDB
+// ✅ Watchlist routes (make sure routes/watchlist.js exists and is clean)
+const watchlistRoutes = require("./routes/watchlist");
+app.use("/api/watchlist", watchlistRoutes);
+
+// ✅ Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
