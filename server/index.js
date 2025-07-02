@@ -1,48 +1,58 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-require("dotenv").config(); // ✅ Load .env variables
+require("dotenv").config();
 
 const app = express();
 
-// ✅ CORS Setup for Local & Vercel Frontend
+//  Dynamic CORS Configuration
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://watchly-moive-web-app.vercel.app"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: false // ❌ No cookies/session, so this is false
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "https://watchly-moive-web-app.vercel.app"
+      
+    ];
+
+    if (
+      !origin || // Allow Postman or curl
+      allowedOrigins.includes(origin) ||
+      origin.endsWith(".vercel.app")
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error("❌ Not allowed by CORS: " + origin));
+    }
+  },
+  credentials: true,
 }));
 
-// ✅ Body parser
+// ✅ JSON Parser
 app.use(express.json());
 
-// ✅ Environment Variables
+// ✅ MongoDB Connection
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-// ✅ Connect to MongoDB
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 })
 .then(() => {
   console.log("✅ Connected to MongoDB");
   app.listen(PORT, () => {
-    console.log(`🎬 Server running on port ${PORT}`);
+    console.log(`🎬 Server running on http://localhost:${PORT}`);
   });
 })
 .catch((err) => {
-  console.error("❌ MongoDB connection error:", err.message);
+  console.error("❌ MongoDB connection error:", err);
 });
 
-// ✅ Basic route
+// ✅ Routes
 app.get("/", (req, res) => {
   res.send("🎬 MovieZone API is running");
 });
 
-// ✅ Routes
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes);
 
