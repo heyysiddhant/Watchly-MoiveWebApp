@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import backendAxios from "../api/axios"; // For your own backend API
 
 const API_KEY = "3c5f8694";
 
@@ -68,7 +69,7 @@ export default function Movies() {
     if (!token) return alert("Please login to add movies to your watchlist.");
 
     try {
-      await axios.post("/api/watchlist", movie, {
+      await backendAxios.post("/api/watchlist", movie, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
